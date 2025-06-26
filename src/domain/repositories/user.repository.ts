@@ -1,0 +1,14 @@
+import { RegisterUserDto } from './../dtos/auth/register-user.dto';
+import { UserEntity } from "../entities/user.entity";
+import { UserEntityWithToken } from '../types/user.types';
+import { LoginUserDto } from '../dtos/auth/login-user.dto';
+
+export abstract class UserRepository {
+
+    abstract registerUser(registerUserDto: RegisterUserDto):UserEntityWithToken;
+
+    abstract loginUser(loginUserDto: LoginUserDto): UserEntityWithToken;
+
+    abstract findById(id: number): Promise<UserEntity>;
+
+}
