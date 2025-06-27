@@ -15,8 +15,8 @@ export class UserRepositoryImpl implements UserRepository {
 
     }
 
-    findById(id: number): Promise<UserEntity> {
-        throw new Error("Method not implemented.");
+    findById(id: string): Promise<Omit<UserEntity,"password">> {
+        return this.datasource.findById(id);
     }
 
     validateEmail(token: string): Promise<boolean> {

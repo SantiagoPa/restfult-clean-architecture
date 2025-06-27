@@ -9,7 +9,7 @@ export abstract class UserRepository {
 
     abstract loginUser(loginUserDto: LoginUserDto): UserEntityWithToken;
 
-    abstract findById(id: number): Promise<UserEntity>;
+    abstract findById(id: string): Promise<Omit<UserEntity,"password">>;
 
     abstract validateEmail(token: string): Promise<boolean>;
     

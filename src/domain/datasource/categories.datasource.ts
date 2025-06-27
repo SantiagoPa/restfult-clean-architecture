@@ -1,0 +1,14 @@
+import { CreateCategoryDto } from './../dtos/category/create-category.dto';
+import { CategoryEntity } from "../entities/category.entity";
+import { UpdateCategoryDto } from '../dtos/category/update-category.dto';
+import { UserEntity } from '../entities';
+import { PaginationDto } from '../dtos';
+import { CategoriesPaginate } from '../types';
+
+export abstract class CategoriesDatasource {
+    abstract getCategories(paginationDto: PaginationDto): Promise<CategoriesPaginate>;
+    abstract findById(id: string): Promise<CategoryEntity>;
+    abstract saveCategory(createCategoryDto: CreateCategoryDto, user: UserEntity): Promise<CategoryEntity>;
+    abstract updateCategory(updateCategoryDto: UpdateCategoryDto): Promise<CategoryEntity>;
+    abstract deleteCategory(id: string): Promise<void>;
+}

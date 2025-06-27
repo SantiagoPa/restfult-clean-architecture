@@ -7,7 +7,7 @@ import { SendEmail } from "../../domain/use-cases/email/send-email";
 export class UserMongoDatasource implements UserDatasource {
 
     constructor(
-        private readonly emailRepository: EmailRepository
+        private readonly emailRepository?: EmailRepository
     ) { }
 
     async registerUser(registerUserDto: RegisterUserDto): UserEntityWithToken {
@@ -67,8 +67,12 @@ export class UserMongoDatasource implements UserDatasource {
         return true;
     }
 
-    findById(id: number): Promise<UserEntity> {
-        throw new Error("Method not implemented.");
+    async findById(id: string): Promise<Omit<UserEntity,"password">> {
+        const user = await UserModel.findById(id);
+        if (!user) throw CustomError.badRequest("User not exist!");
+
+        const { password, ...userEntity } = UserEntity.formObject(user);
+        return userEntity;
     }
 
     private async sendEmailValidateLink(email: string): Promise<void> {
@@ -82,15 +86,15 @@ export class UserMongoDatasource implements UserDatasource {
             <p>Click on the following link to validate your email</p>
             <a href="${link}">Validate your email: ${email}</a>
         `;
-
-        const isSend = await new SendEmail(this.emailRepository).execute({
-            to: email,
-            subject: "Validate your email",
-            htmlBody: html
-        });
-
-        if (!isSend) throw CustomError.internalServer('Error sending email');
-
+        if (this.emailRepository) {
+            const isSend = await new SendEmail(this.emailRepository).execute({
+                to: email,
+                subject: "Validate your email",
+                htmlBody: html
+            });
+    
+            if (!isSend) throw CustomError.internalServer('Error sending email');
+        }
     }
 
 }
