@@ -12,4 +12,6 @@ export abstract class UserDatasource {
 
     abstract findById(id: number): Promise<UserEntity>;
 
+    abstract validateEmail(token: string): Promise<boolean>;
+
 }

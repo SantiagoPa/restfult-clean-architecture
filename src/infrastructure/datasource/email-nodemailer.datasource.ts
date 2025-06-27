@@ -10,6 +10,7 @@ export class EmailNodeMailerDatasoruce implements EmailDatasource {
         mailerService: string,
         mailerEmail: string,
         mailerKey: string,
+        private readonly postToProvider: boolean,
     ) {
         this.transporter = nodemailer.createTransport({
             service: mailerService,
@@ -23,6 +24,7 @@ export class EmailNodeMailerDatasoruce implements EmailDatasource {
     async sendEmail(options: SendMailOptions): Promise<boolean> {
 
         const { to, subject, htmlBody, attachements = [] } = options;
+        if (!this.postToProvider) return true;
 
         try {
             const sentInformation = await this.transporter.sendMail({
@@ -34,6 +36,7 @@ export class EmailNodeMailerDatasoruce implements EmailDatasource {
             // console.log( sentInformation );
             return true;
         } catch (error) {
+            console.log(error)
             return false;
         }
 

@@ -9,9 +9,10 @@ export class AuthRoutes {
 
     static get routes(): Router {
         const router = Router();
-        const emailDatasource = new EmailNodeMailerDatasoruce(envs.MAILER_SERVICE, 
-                                                              envs.MAILER_EMAIL, 
-                                                              envs.MAILER_SECRET_KEY);
+        const emailDatasource = new EmailNodeMailerDatasoruce(envs.MAILER_SERVICE,
+            envs.MAILER_EMAIL,
+            envs.MAILER_SECRET_KEY,
+            envs.SEND_EMAIL);
 
         const emailRepository = new EmailRepositoryImpl(emailDatasource);
 

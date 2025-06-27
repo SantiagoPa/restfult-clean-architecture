@@ -11,4 +11,6 @@ export abstract class UserRepository {
 
     abstract findById(id: number): Promise<UserEntity>;
 
+    abstract validateEmail(token: string): Promise<boolean>;
+    
 }

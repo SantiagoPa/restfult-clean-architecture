@@ -16,7 +16,13 @@ export const jwtAdapter = {
     },
 
     validateToken: (token: string) => {
+        return new Promise((resolve)=>{
+            jwt.verify(token, JWT_SEED, (error, decoded)=>{
+                if (error) return resolve(null);
+                if (!decoded) return resolve(null);
 
-        return;
+                resolve(decoded);
+            });
+        });
     }
 }

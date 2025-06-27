@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { CustomError, LoginUser, LoginUserDto, RegisterUser, RegisterUserDto, UserRepository } from "../../domain";
+import { CustomError, LoginUser, LoginUserDto, RegisterUser, RegisterUserDto, UserRepository, ValidateEmail } from "../../domain";
 
 export class AuthController {
 
@@ -36,6 +36,10 @@ export class AuthController {
     }
 
     validateEmail = (req: Request, res: Response) => {
-        res.json("VALIDATE EMAIL USER");
+        const { token } = req.params;
+        new ValidateEmail(this.repository)
+            .execute(token)
+            .then(()=>res.json("EMAIL WAS VALIDATE PROPERLY"))
+            .catch(error=>this.handelError(error, res));
     }
 }

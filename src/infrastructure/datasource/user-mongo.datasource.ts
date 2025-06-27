@@ -52,32 +52,45 @@ export class UserMongoDatasource implements UserDatasource {
         };
     }
 
+    async validateEmail(token: string): Promise<boolean> {
+        const payload = await jwtAdapter.validateToken(token);
+        if (!payload) throw CustomError.unauthorize("invalid token");
+        const { email } = payload as { email: string; };
+
+        if (!email) throw CustomError.internalServer("email not in token");
+
+        const user = await UserModel.findOne({ email: email });
+
+        if (!user) throw CustomError.internalServer(`user with email: ${email} - not exist!`);
+        user.emailValidated = true;
+        await user.save();
+        return true;
+    }
+
     findById(id: number): Promise<UserEntity> {
         throw new Error("Method not implemented.");
     }
 
-    private sendEmailValidateLink(email: string): Promise<boolean> {
-        const token = jwtAdapter.generateToken({ email });
+    private async sendEmailValidateLink(email: string): Promise<void> {
+        const token = await jwtAdapter.generateToken({ email });
         if (!token) throw CustomError.internalServer('Error getting token');
 
-        const link = `${envs.WEBSERVICE_URL}/auth/validate-email/${token}`;
-
+        const link = `${envs.WEBSERVICE_URL}/auth/validate-email/${token.toString()}`;
+        
         const html = `
             <h1>validate your email</h1>
             <p>Click on the following link to validate your email</p>
             <a href="${link}">Validate your email: ${email}</a>
         `;
 
-        const check = new SendEmail(this.emailRepository).execute({
+        const isSend = await new SendEmail(this.emailRepository).execute({
             to: email,
             subject: "Validate your email",
             htmlBody: html
-        }).then((isSend)=>{
-            if (!isSend) throw CustomError.internalServer('Error sending email');
-            return true;
         });
 
-        return check;
+        if (!isSend) throw CustomError.internalServer('Error sending email');
+
     }
 
 }
